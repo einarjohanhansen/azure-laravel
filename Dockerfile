@@ -29,7 +29,8 @@ COPY sshd_config /etc/ssh/
 COPY ssh_setup.sh /tmp
 RUN chmod -R +x /tmp/ssh_setup.sh \
     && (sleep 1;/tmp/ssh_setup.sh 2>&1 > /dev/null) \
-    && rm -rf /tmp/*
+    && rm -rf /tmp/* \
+    && chown -R www-data:www-data /var/www/html
 
 ENV PORT 8080
 ENV SSH_PORT 2222
@@ -39,4 +40,4 @@ COPY sshd_config /etc/ssh/
 
 COPY supervisor/php-app.conf /etc/supervisor/conf.d/php-app.conf
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/php-app.conf"]
+ENTRYPOINT ["/bin/init_container.sh"]

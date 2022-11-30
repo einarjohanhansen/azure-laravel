@@ -32,4 +32,5 @@ return [
     ],
 
     'secret' => env('APP_SECRET', null),
+    'app_secret' => env('APPSETTING_APP_SECRET', null),
 ];

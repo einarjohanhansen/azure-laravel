@@ -129,6 +129,7 @@
                         <li>APP_URL - {{ config('app.url') }} ({{ env('APP_URL') }})</li>
                         <li>APP_NAME - {{ config('app.name') }} ({{ env('APP_NAME') }})</li>
                         <li>APP_SECRET - {{ config('services.secret') }} ({{ env('APP_SECRET') }})</li>
+                        <li>APPSETTING_APP_SECRET - {{ config('services.app_secret') }} ({{ env('APPSETTING_APP_SECRET') }})</li>
                     </ul>
                 </div>
             </div>

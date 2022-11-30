@@ -1,0 +1,72 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+# https://docs.github.com/en/actions/using-workflows/reusing-workflows
+# https://learn.microsoft.com/nb-no/azure/app-service/deploy-github-actions?tabs=applevel#generate-deployment-credentials
+
+name: Build and deploy container app to Azure Web App
+
+env:
+  AZURE_WEBAPP_NAME: te-p-apps-ohmiar
+  CONTAINER_REGISTRY_NAME: tepcrohmiar
+
+on:
+  push:
+    branches:
+      - feature/azure-deployment
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to registry
+      uses: docker/login-action@v2
+      with:
+        registry: https://${{ env.CONTAINER_REGISTRY_NAME }}.azurecr.io/
+        username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
+        password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
+
+    - name: Build and push container image to registry
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        push: true
+        tags: '${{ env.CONTAINER_REGISTRY_NAME }}.azurecr.io/laravel:${{ github.sha }}'
+
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'staging'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+    - name: Deploy to Azure Web App
+      id: deploy-to-webapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: '${{ env.CONTAINER_REGISTRY_NAME }}.azurecr.io/laravel:${{ github.sha }}'
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: [build, deploy-staging]
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+    - name: Deploy to Azure Web App
+      id: deploy-to-webapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: '${{ env.CONTAINER_REGISTRY_NAME }}.azurecr.io/laravel:${{ github.sha }}'

@@ -39,4 +39,4 @@ COPY sshd_config /etc/ssh/
 
 COPY supervisor/php-app.conf /etc/supervisor/conf.d/php-app.conf
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/php-app.conf"]
+CMD ["/usr/sbin/sshd", "&&", "/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/php-app.conf"]

@@ -130,6 +130,8 @@
                         <li>APP_NAME - {{ config('app.name') }} ({{ env('APP_NAME') }})</li>
                         <li>APP_SECRET - {{ config('services.secret') }} ({{ env('APP_SECRET') }})</li>
                         <li>APPSETTING_APP_SECRET - {{ config('services.app_secret') }} ({{ env('APPSETTING_APP_SECRET') }})</li>
+                        <li>WEBSITE_INSTANCE_ID - {{ env('WEBSITE_INSTANCE_ID') }}</li>
+
                     </ul>
                 </div>
             </div>

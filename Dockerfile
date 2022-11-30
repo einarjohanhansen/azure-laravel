@@ -13,23 +13,30 @@ RUN cp .env.example .env \
 
 # ssh
 # https://github.com/Azure-Samples/docker-django-webapp-linux/blob/master/Dockerfile
+# https://github.com/Azure-App-Service/php/blob/master/7.3-apache/Dockerfile
 # https://learn.microsoft.com/en-us/answers/questions/470087/unable-to-ssh-into-web-app.html
 ENV SSH_PASSWD "root:Docker!"
 ENV SSH_PORT 2222
+
+COPY init_container.sh /bin/
 RUN apk update \
-    && apk add dialog openssh-server \
+    && apk add dialog openssh openssh-server \
+    && chmod 755 /bin/init_container.sh \
     && echo "$SSH_PASSWD" | chpasswd
 
 # configure startup
 COPY sshd_config /etc/ssh/
 COPY ssh_setup.sh /tmp
 RUN chmod -R +x /tmp/ssh_setup.sh \
-   && (sleep 1;/tmp/ssh_setup.sh 2>&1 > /dev/null) \
-   && rm -rf /tmp/*
+    && (sleep 1;/tmp/ssh_setup.sh 2>&1 > /dev/null) \
+    && rm -rf /tmp/*
 
 ENV PORT 8080
 ENV SSH_PORT 2222
 EXPOSE 2222 8080
+
 COPY sshd_config /etc/ssh/
 
-CMD ["/usr/local/bin/php", "-d", "variables_order=EGPCS", "/var/www/html/artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+COPY supervisor/php-app.conf /etc/supervisor/conf.d/php-app.conf
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/php-app.conf"]

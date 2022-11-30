@@ -11,6 +11,14 @@ RUN cp .env.example .env \
     && touch /var/www/html/database/database.sqlite \
     && php artisan key:generate
 
-EXPOSE 80
+# ssh
+ENV SSH_PASSWD "root:Docker!"
+RUN apk update \
+    && apk add dialog  openssh-server \
+    && echo "$SSH_PASSWD" | chpasswd
+
+COPY sshd_config /etc/ssh/
+
+EXPOSE 80 2222
 
 CMD ["/usr/local/bin/php", "-d", "variables_order=EGPCS", "/var/www/html/artisan", "serve", "--host=0.0.0.0", "--port=80"]

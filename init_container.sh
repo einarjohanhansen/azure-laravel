@@ -20,9 +20,6 @@ eval $(printenv | sed -n "s/^\([^=]\+\)=\(.*\)$/export \1=\2/p" | sed 's/"/\\\"/
 sed -i "s/SSH_PORT/$SSH_PORT/g" /etc/ssh/sshd_config
 /usr/sbin/sshd
 
-appPath="/var/www/html"
-runFromPath="/tmp/webapp"
-startupCommandPath="/opt/startup/startup.sh"
 userStartupCommand="$@"
 if [ -z "$userStartupCommand" ]
 then

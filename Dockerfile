@@ -6,15 +6,13 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-d
 FROM tepcrohmiar.azurecr.io/php81:006302d754b132ac32d30e839659d6adee1a8b09
 LABEL maintainer="Einar-Johan Hansen"
 COPY --from=build /app /var/www/html/
+
 WORKDIR /var/www/html
+
 RUN cp .env.example .env \
     && touch /var/www/html/database/database.sqlite \
     && php artisan key:generate
 
-# ssh
-# https://github.com/Azure-Samples/docker-django-webapp-linux/blob/master/Dockerfile
-# https://github.com/Azure-App-Service/php/blob/master/7.3-apache/Dockerfile
-# https://learn.microsoft.com/en-us/answers/questions/470087/unable-to-ssh-into-web-app.html
 ENV SSH_PASSWD "root:Docker!"
 ENV SSH_PORT 2222
 

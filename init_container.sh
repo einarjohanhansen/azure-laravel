@@ -20,6 +20,21 @@ eval $(printenv | sed -n "s/^\([^=]\+\)=\(.*\)$/export \1=\2/p" | sed 's/"/\\\"/
 sed -i "s/SSH_PORT/$SSH_PORT/g" /etc/ssh/sshd_config
 /usr/sbin/sshd
 
+# Migrations
+/usr/local/bin/php artisan migrate --force
+
+# Clear caches
+/usr/local/bin/php artisan cache:clear
+
+# Clear and cache routes
+/usr/local/bin/php artisan route:cache
+
+# Clear and cache config
+/usr/local/bin/php artisan config:cache
+
+# Clear and cache config
+/usr/local/bin/php artisan view:cache
+
 userStartupCommand="$@"
 if [ -z "$userStartupCommand" ]
 then

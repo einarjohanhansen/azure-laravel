@@ -15,6 +15,7 @@ RUN cp .env.example .env \
 
 ENV SSH_PASSWD "root:Docker!"
 ENV SSH_PORT 2222
+ENV PORT 8080
 
 COPY init_container.sh /bin/
 RUN apk update \
@@ -30,12 +31,9 @@ RUN chmod -R +x /tmp/ssh_setup.sh \
     && rm -rf /tmp/* \
     && chown -R www-data:www-data /var/www/html
 
-ENV PORT 8080
-ENV SSH_PORT 2222
 EXPOSE 2222 8080
 
 COPY sshd_config /etc/ssh/
-
 COPY supervisor/php-app.conf /etc/supervisor/conf.d/php-app.conf
 
 ENTRYPOINT ["/bin/init_container.sh"]
